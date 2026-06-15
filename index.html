@@ -377,19 +377,27 @@
 
     /* ─── PHOTOS ─── */
     #photos { background: var(--dark-grey); padding-bottom: 60px; }
-    .carousel-wrap { position: relative; flex: 1; display: flex; flex-direction: column; }
-    .carousel-track-outer { overflow: hidden; flex: 1; }
+    .carousel-wrap { position: relative; flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .carousel-track-outer { overflow: hidden; flex: 1; min-height: 0; }
     .carousel-track {
       display: flex;
       height: 100%;
       transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .carousel-slide {
-      flex: 0 0 calc(33.333% - 11px);
+      flex-shrink: 0;
+      width: calc((100vw - 152px) / 3);
+      height: 100%;
       margin-right: 16px;
       position: relative;
       overflow: hidden;
       background: var(--mid-grey);
+    }
+    @media (max-width: 1100px) and (min-width: 700px) {
+      .carousel-slide { width: calc((100vw - 64px) / 2); }
+    }
+    @media (max-width: 700px) {
+      .carousel-slide { width: calc(100vw - 48px); }
     }
     .carousel-slide img {
       width: 100%;
@@ -693,42 +701,27 @@
       <div class="carousel-wrap anim">
         <div class="carousel-track-outer" id="carouselOuter">
           <div class="carousel-track" id="carouselTrack">
-            <div class="carousel-slide"><img src="img/14b227d3-1f16-45c7-909e-94ecb09775cf_rw_1200.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/14b227d3-1f16-45c7-909e-94ecb09775cf_rw_1200.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/3d0e1ab0-9859-4993-8312-c083caecb5b7_rw_1200.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/3d0e1ab0-9859-4993-8312-c083caecb5b7_rw_1200.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/14b227d3-1f16-45c7-909e-94ecb09775cf_rw_1200.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/14b227d3-1f16-45c7-909e-94ecb09775cf_rw_1200.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/c40372ca-d7d1-4632-9a4b-a9d1228f9e43_rw_1200.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/c40372ca-d7d1-4632-9a4b-a9d1228f9e43_rw_1200.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-247.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-247.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-249.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-249.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-251.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-251.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-253.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-253.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-254.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-254.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-256.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-256.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-257.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-257.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-258.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-258.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-259.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-259.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-260.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-260.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-262.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-262.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-263.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-263.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-264.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-264.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-266.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-266.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-269.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-269.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-271.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-271.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-273.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-273.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-274.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-274.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-275.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-275.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-276.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-276.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-277.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-277.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-278.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-278.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-279.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-279.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-280.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-280.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-281.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-281.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-282.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-282.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-283.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-283.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-284.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-284.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-285.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-285.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-286.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-286.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-292.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-292.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-293.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-293.jpg" download class="photo-download">Download</a></div></div>
-            <div class="carousel-slide"><img src="img/Foto-294.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-294.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-296.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-296.jpg" download class="photo-download">Download</a></div></div>
             <div class="carousel-slide"><img src="img/Foto-297.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-297.jpg" download class="photo-download">Download</a></div></div>
           </div>
@@ -905,37 +898,52 @@
 
     // ─── Carousel ───
     const track    = document.getElementById('carouselTrack');
-    const slides   = track.querySelectorAll('.carousel-slide');
     const prevBtn  = document.getElementById('carouselPrev');
     const nextBtn  = document.getElementById('carouselNext');
     const dotsCont = document.getElementById('carouselDots');
     const counter  = document.getElementById('carouselCounter');
-
-    const perView  = window.innerWidth < 700 ? 1 : window.innerWidth < 1100 ? 2 : 3;
-    const total    = slides.length;
-    const maxIdx   = total - perView;
     let cCurrent   = 0;
+    let cSlides    = [];
+    let cMaxIdx    = 0;
+    let cPerView   = 0;
 
-    for (let i = 0; i <= maxIdx; i++) {
-      const d = document.createElement('button');
-      d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-      d.addEventListener('click', () => cGoTo(i));
-      dotsCont.appendChild(d);
+    function initCarousel() {
+      dotsCont.innerHTML = '';
+      cCurrent = 0;
+
+      cSlides  = Array.from(track.querySelectorAll('.carousel-slide'));
+      cPerView = window.innerWidth < 700 ? 1 : window.innerWidth < 1100 ? 2 : 3;
+      cMaxIdx  = Math.max(0, cSlides.length - cPerView);
+
+for (let i = 0; i <= cMaxIdx; i++) {
+        const d = document.createElement('button');
+        d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+        d.addEventListener('click', () => cGoTo(i));
+        dotsCont.appendChild(d);
+      }
+      cGoTo(0);
     }
 
-    function getSlideW() { return slides[0].offsetWidth + 16; }
+    function getSlideW() { return cSlides[0] ? cSlides[0].offsetWidth + 16 : 0; }
 
     function cGoTo(i) {
-      cCurrent = Math.max(0, Math.min(i, maxIdx));
+      cCurrent = Math.max(0, Math.min(i, cMaxIdx));
       track.style.transform = `translateX(-${cCurrent * getSlideW()}px)`;
       dotsCont.querySelectorAll('.carousel-dot').forEach((d, j) => d.classList.toggle('active', j === cCurrent));
-      counter.textContent = `${cCurrent + 1} / ${maxIdx + 1}`;
+      counter.textContent = `${cCurrent + 1} / ${cMaxIdx + 1}`;
       prevBtn.disabled = cCurrent === 0;
-      nextBtn.disabled = cCurrent === maxIdx;
+      nextBtn.disabled = cCurrent === cMaxIdx;
     }
 
     prevBtn.addEventListener('click', () => cGoTo(cCurrent - 1));
     nextBtn.addEventListener('click', () => cGoTo(cCurrent + 1));
+
+    // Remove broken images, then init
+    const allImgs = Array.from(track.querySelectorAll('.carousel-slide img'));
+    allImgs.forEach(img => {
+      img.addEventListener('error', () => img.closest('.carousel-slide').remove());
+    });
+    initCarousel();
 
     // Swipe inside carousel
     let cTouchX = 0;
@@ -944,8 +952,6 @@
       const diff = cTouchX - e.changedTouches[0].clientX;
       if (Math.abs(diff) > 40) { e.stopPropagation(); cGoTo(cCurrent + (diff > 0 ? 1 : -1)); }
     });
-
-    cGoTo(0);
   </script>
 </body>
 </html>
