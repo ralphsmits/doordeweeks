@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOORDEWEEKS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #0a0a0a;
+      --off-white: #f2ede7;
+      --warm-grey: #8a8278;
+      --accent: #c8b89a;
+      --dark-grey: #1a1a1a;
+      --mid-grey: #2e2e2e;
+      --ease: cubic-bezier(0.76, 0, 0.24, 1);
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.7;
+      background: var(--black);
+      color: var(--off-white);
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      width: 10px; height: 10px;
+      background: var(--off-white);
+      border-radius: 50%;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.2s, height 0.2s, background 0.2s;
+    }
+    .cursor.big {
+      width: 36px; height: 36px;
+      background: transparent;
+      border: 1px solid var(--off-white);
+    }
+    a, button { cursor: none; }
+
+    /* Page wrapper — this slides */
+    #page {
+      height: 100%;
+      transition: transform 0.9s var(--ease);
+      will-change: transform;
+    }
+
+    /* Sections */
+    .panel {
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 60px;
+    }
+
+    /* ─── Animations ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .panel .anim {
+      opacity: 0;
+    }
+    .panel.active .anim {
+      animation: fadeUp 0.7s var(--ease) forwards;
+    }
+    .panel.active .anim:nth-child(1) { animation-delay: 0.05s; }
+    .panel.active .anim:nth-child(2) { animation-delay: 0.15s; }
+    .panel.active .anim:nth-child(3) { animation-delay: 0.25s; }
+    .panel.active .anim:nth-child(4) { animation-delay: 0.35s; }
+    .panel.active .anim:nth-child(5) { animation-delay: 0.45s; }
+    .panel.active .anim:nth-child(6) { animation-delay: 0.55s; }
+
+    /* ─── Nav ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 200;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 60px;
+      transition: background 0.4s, padding 0.4s;
+    }
+    nav.dark {
+      background: rgba(10,10,10,0.92);
+      padding: 18px 60px;
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 1.1rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--off-white);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--warm-grey);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--off-white); }
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 1px;
+      background: var(--off-white);
+      transition: 0.3s;
+    }
+
+    /* ─── Side dots ─── */
+    #sidedots {
+      position: fixed;
+      right: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sdot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      border: none;
+      transition: background 0.3s, transform 0.3s;
+      padding: 0;
+    }
+    .sdot.active {
+      background: var(--off-white);
+      transform: scale(1.5);
+    }
+
+    /* ─── Section labels ─── */
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 40px;
+    }
+
+    /* ─── HERO ─── */
+    #hero {
+      background: var(--black);
+      justify-content: flex-end;
+      padding-bottom: 80px;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('img/hero.png');
+      background-size: cover;
+      background-position: center 20%;
+      filter: brightness(0.42);
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 900px; }
+    .hero-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: clamp(2.8rem, 8vw, 7rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 32px;
+      white-space: nowrap;
+    }
+    .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+    .btn {
+      display: inline-block;
+      padding: 13px 32px;
+      font-size: 0.72rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: all 0.25s;
+      font-weight: 500;
+    }
+    .btn-primary { background: var(--off-white); color: var(--black); }
+    .btn-primary:hover { background: var(--accent); }
+    .btn-outline { border: 1px solid rgba(255,255,255,0.4); color: var(--off-white); }
+    .btn-outline:hover { border-color: var(--off-white); }
+    .scroll-hint {
+      position: absolute;
+      bottom: 36px; right: 60px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--warm-grey);
+      writing-mode: vertical-rl;
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--warm-grey), transparent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity:0.3; } 50% { opacity:1; } }
+
+    /* ─── ABOUT ─── */
+    #about { background: var(--dark-grey); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      height: 100%;
+      max-height: calc(100vh - 160px);
+    }
+    .about-photo {
+      width: 100%;
+      height: 100%;
+      max-height: calc(100vh - 200px);
+      object-fit: cover;
+      object-position: top;
+      filter: grayscale(20%);
+    }
+    .about-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .about-text p {
+      color: rgba(242,237,231,0.72);
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+    }
+    .members {
+      display: flex;
+      gap: 28px;
+      margin-top: 32px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    .member { flex: 1; }
+    .member-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+    .member-role {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--warm-grey);
+    }
+
+    /* ─── MUSIC ─── */
+    #music { background: var(--black); }
+    .releases { display: flex; flex-direction: column; margin-bottom: 32px; }
+    .release-row {
+      display: grid;
+      grid-template-columns: 52px 1fr auto auto;
+      align-items: center;
+      gap: 24px;
+      padding: 22px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      text-decoration: none;
+      color: var(--off-white);
+      transition: background 0.2s, padding-left 0.2s;
+    }
+    .release-row:first-child { border-top: 1px solid rgba(255,255,255,0.07); }
+    .release-row:hover { background: rgba(255,255,255,0.03); padding-left: 10px; }
+    .release-num { font-size: 0.72rem; color: var(--warm-grey); text-align: center; }
+    .release-info h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .release-info span { font-size: 0.7rem; color: var(--warm-grey); letter-spacing: 0.06em; }
+    .release-badge {
+      font-size: 0.58rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 3px 9px;
+    }
+    .release-play { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warm-grey); }
+    .album-teaser {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 32px;
+      padding: 28px 32px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .album-teaser-text p {
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .album-teaser-text h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      font-style: italic;
+    }
+    .album-teaser-sub { color: var(--warm-grey); font-size: 0.82rem; margin-top: 6px; }
+    .album-dot {
+      width: 70px; height: 70px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.56rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--warm-grey);
+      flex-shrink: 0;
+      animation: spin 20s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── PHOTOS ─── */
+    #photos { background: var(--dark-grey); padding-bottom: 60px; }
+    .carousel-wrap { position: relative; flex: 1; display: flex; flex-direction: column; }
+    .carousel-track-outer { overflow: hidden; flex: 1; }
+    .carousel-track {
+      display: flex;
+      height: 100%;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .carousel-slide {
+      flex: 0 0 calc(33.333% - 11px);
+      margin-right: 16px;
+      position: relative;
+      overflow: hidden;
+      background: var(--mid-grey);
+    }
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+      filter: grayscale(15%);
+      transition: filter 0.4s, transform 0.5s;
+    }
+    .carousel-slide:hover img { filter: grayscale(0%); transform: scale(1.03); }
+    .photo-overlay {
+      position: absolute; inset: 0;
+      background: rgba(10,10,10,0.55);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .carousel-slide:hover .photo-overlay { opacity: 1; }
+    .photo-download {
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--off-white);
+      border: 1px solid rgba(255,255,255,0.4);
+      padding: 9px 20px;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .photo-download:hover { background: rgba(255,255,255,0.1); }
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 20px;
+      flex-shrink: 0;
+    }
+    .carousel-btn {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--off-white);
+      width: 42px; height: 42px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      transition: all 0.2s;
+      cursor: none; flex-shrink: 0;
+    }
+    .carousel-btn:hover { border-color: var(--off-white); }
+    .carousel-btn:disabled { opacity: 0.2; pointer-events: none; }
+    .carousel-dots { display: flex; gap: 7px; }
+    .carousel-dot {
+      width: 20px; height: 1px;
+      background: rgba(255,255,255,0.2);
+      border: none; padding: 0;
+      transition: background 0.3s, width 0.3s;
+      cursor: none;
+    }
+    .carousel-dot.active { background: var(--off-white); width: 40px; }
+    .carousel-counter { margin-left: auto; font-size: 0.68rem; color: var(--warm-grey); letter-spacing: 0.1em; }
+
+    /* ─── SHOWS ─── */
+    #shows { background: var(--black); }
+    .shows-list { display: flex; flex-direction: column; }
+    .show-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 1fr auto;
+      align-items: center;
+      gap: 28px;
+      padding: 24px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      text-decoration: none;
+      color: var(--off-white);
+    }
+    .show-row:first-child { border-top: 1px solid rgba(255,255,255,0.07); }
+    .show-date { font-family: 'Playfair Display', serif; font-size: 0.9rem; }
+    .show-venue { font-size: 0.9rem; }
+    .show-city { font-size: 0.82rem; color: var(--warm-grey); }
+    .show-past { opacity: 0.42; }
+    .show-ticket {
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--warm-grey);
+      padding: 9px 18px;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    a.show-row:hover .show-ticket { border-color: var(--warm-grey); }
+
+    /* ─── LISTEN ─── */
+    #listen { background: var(--off-white); color: var(--black); }
+    #listen .section-label { color: rgba(0,0,0,0.4); }
+    #listen .section-title { color: var(--black); }
+    .platforms {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+    .platform-card {
+      border: 1px solid rgba(0,0,0,0.12);
+      padding: 32px 24px;
+      text-decoration: none;
+      color: var(--black);
+      transition: all 0.25s;
+      display: block;
+    }
+    .platform-card:hover { background: var(--black); color: var(--off-white); border-color: var(--black); }
+    .platform-icon { font-size: 1.5rem; margin-bottom: 14px; display: block; }
+    .platform-name { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; margin-bottom: 5px; }
+    .platform-sub { font-size: 0.7rem; letter-spacing: 0.07em; opacity: 0.5; }
+
+    /* ─── CONTACT ─── */
+    #contact { background: var(--black); }
+    .contact-single a {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+      color: var(--off-white);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 14px;
+      transition: color 0.2s;
+    }
+    .contact-single a:hover { color: var(--accent); }
+    .contact-single p { font-size: 0.88rem; color: var(--warm-grey); }
+
+    /* ─── FOOTER ─── */
+    footer.panel {
+      background: var(--dark-grey);
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 1.3rem;
+      letter-spacing: 0.12em;
+    }
+    .footer-copy { font-size: 0.72rem; color: var(--warm-grey); text-align: center; }
+    .footer-social { display: flex; gap: 22px; }
+    .footer-social a {
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--warm-grey);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-social a:hover { color: var(--off-white); }
+
+    /* ─── Mobile ─── */
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; }
+      nav.dark { padding: 14px 24px; }
+      .nav-links { display: none; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        inset: 0;
+        background: var(--black);
+        justify-content: center;
+        align-items: center;
+        gap: 36px;
+        z-index: 199;
+      }
+      .nav-links.open a { font-size: 1.1rem; }
+      .hamburger { display: flex; z-index: 201; }
+      .panel { padding: 60px 24px; }
+      #hero { padding-bottom: 60px; }
+      .about-grid { grid-template-columns: 1fr; gap: 24px; }
+      .about-photo { max-height: 35vh; }
+      .about-text h2 { font-size: 1.4rem; }
+      .carousel-slide { flex: 0 0 calc(80% - 8px); }
+      .show-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .show-date { font-size: 0.8rem; }
+      .show-venue { grid-column: span 2; font-size: 0.82rem; }
+      .show-city { display: none; }
+      .platforms { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .platform-card { padding: 22px 18px; }
+      footer.panel { flex-direction: column; gap: 24px; text-align: center; }
+      .footer-social { flex-wrap: wrap; justify-content: center; }
+      .members { flex-direction: column; gap: 16px; }
+      #sidedots { display: none; }
+      .album-teaser { flex-direction: column; gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="nav-logo" onclick="goToSection(0);return false;">DOORDEWEEKS</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#" onclick="goToSection(1);closeMobileMenu();return false;">Over ons</a></li>
+      <li><a href="#" onclick="goToSection(2);closeMobileMenu();return false;">Muziek</a></li>
+      <li><a href="#" onclick="goToSection(3);closeMobileMenu();return false;">Foto's</a></li>
+      <li><a href="#" onclick="goToSection(4);closeMobileMenu();return false;">Shows</a></li>
+      <li><a href="#" onclick="goToSection(5);closeMobileMenu();return false;">Contact</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- SIDE DOTS -->
+  <div id="sidedots"></div>
+
+  <!-- PAGE WRAPPER -->
+  <div id="page">
+
+    <!-- HERO -->
+    <section class="panel" id="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <p class="hero-label anim">Breda, Nederland — Est. 2025</p>
+        <h1 class="hero-title anim">DOORDEWEEKS</h1>
+        <div class="hero-ctas anim">
+          <a href="https://open.spotify.com/artist/5Qm3TZLyl5794591xJqpdE" target="_blank" class="btn btn-primary">Beluister op Spotify</a>
+          <a href="#" onclick="goToSection(1);return false;" class="btn btn-outline">Meer over ons</a>
+        </div>
+      </div>
+      <div class="scroll-hint anim">
+        <div class="scroll-line"></div>
+        Scroll
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="panel" id="about">
+      <div class="about-grid">
+        <div class="anim">
+          <img src="img/14b227d3-1f16-45c7-909e-94ecb09775cf_rw_1200.jpg" alt="DOORDEWEEKS" class="about-photo" />
+        </div>
+        <div class="about-text">
+          <p class="section-label anim">Over ons</p>
+          <h2 class="anim">Drie jongens.<br>Één uitlaatklep.</h2>
+          <div class="anim">
+            <p>DOORDEWEEKS is een Nederlandstalige muziekgroep uit Breda. Drie Communication & Multimedia Designers met een gedeelde passie voor muziek, beeld en verhalen. Wat begon als een groepsproject groeide uit tot een serieuze muziekgroep met een oog voor de toekomst.</p>
+            <p>In april 2025 debuteerden ze met <em>"Spanningsboog"</em> — sindsdien niet meer gestopt.</p>
+          </div>
+          <div class="members anim">
+            <div class="member">
+              <div class="member-name">Robbe van Broekhoven</div>
+              <div class="member-role">Productie</div>
+            </div>
+            <div class="member">
+              <div class="member-name">Luuk Roovers</div>
+              <div class="member-role">Zang</div>
+            </div>
+            <div class="member">
+              <div class="member-name">Ralph Smits</div>
+              <div class="member-role">Zang</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MUSIC -->
+    <section class="panel" id="music">
+      <p class="section-label anim">Discografie</p>
+      <h2 class="section-title anim">Releases</h2>
+      <div class="releases anim">
+        <a href="https://open.spotify.com/artist/5Qm3TZLyl5794591xJqpdE" target="_blank" class="release-row">
+          <div class="release-num">03</div>
+          <div class="release-info"><h3>Escalatie</h3><span>Single — 12 december 2025</span></div>
+          <span class="release-badge">Nieuw</span>
+          <span class="release-play">Beluister →</span>
+        </a>
+        <a href="https://open.spotify.com/artist/5Qm3TZLyl5794591xJqpdE" target="_blank" class="release-row">
+          <div class="release-num">02</div>
+          <div class="release-info"><h3>Schimmige Vent</h3><span>Single — 13 juli 2025</span></div>
+          <span class="release-badge" style="border-color:transparent;color:transparent;"></span>
+          <span class="release-play">Beluister →</span>
+        </a>
+        <a href="https://open.spotify.com/artist/5Qm3TZLyl5794591xJqpdE" target="_blank" class="release-row">
+          <div class="release-num">01</div>
+          <div class="release-info"><h3>Spanningsboog</h3><span>Single — 1 april 2025</span></div>
+          <span class="release-badge" style="border-color:var(--warm-grey);color:var(--warm-grey)">Debuut</span>
+          <span class="release-play">Beluister →</span>
+        </a>
+      </div>
+      <div class="album-teaser anim">
+        <div class="album-teaser-text">
+          <p>Aankomend</p>
+          <h3>Er komt meer.</h3>
+          <div class="album-teaser-sub">DOORDEWEEKS werkt aan nieuw materiaal. Houd onze kanalen in de gaten.</div>
+        </div>
+        <div class="album-dot">Binnenkort</div>
+      </div>
+    </section>
+
+    <!-- PHOTOS -->
+    <section class="panel" id="photos">
+      <p class="section-label anim">Fotografie</p>
+      <h2 class="section-title anim" style="margin-bottom:20px;">Persmateriaal</h2>
+      <div class="carousel-wrap anim">
+        <div class="carousel-track-outer" id="carouselOuter">
+          <div class="carousel-track" id="carouselTrack">
+            <div class="carousel-slide"><img src="img/14b227d3-1f16-45c7-909e-94ecb09775cf_rw_1200.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/14b227d3-1f16-45c7-909e-94ecb09775cf_rw_1200.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/3d0e1ab0-9859-4993-8312-c083caecb5b7_rw_1200.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/3d0e1ab0-9859-4993-8312-c083caecb5b7_rw_1200.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/c40372ca-d7d1-4632-9a4b-a9d1228f9e43_rw_1200.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/c40372ca-d7d1-4632-9a4b-a9d1228f9e43_rw_1200.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-247.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-247.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-249.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-249.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-251.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-251.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-253.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-253.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-254.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-254.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-256.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-256.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-257.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-257.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-258.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-258.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-259.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-259.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-260.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-260.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-262.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-262.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-263.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-263.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-264.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-264.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-266.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-266.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-269.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-269.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-271.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-271.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-273.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-273.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-274.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-274.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-275.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-275.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-276.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-276.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-277.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-277.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-278.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-278.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-279.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-279.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-280.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-280.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-281.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-281.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-282.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-282.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-283.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-283.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-284.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-284.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-285.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-285.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-286.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-286.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-292.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-292.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-293.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-293.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-294.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-294.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-296.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-296.jpg" download class="photo-download">Download</a></div></div>
+            <div class="carousel-slide"><img src="img/Foto-297.jpg" alt="DOORDEWEEKS" loading="lazy" /><div class="photo-overlay"><a href="img/Foto-297.jpg" download class="photo-download">Download</a></div></div>
+          </div>
+        </div>
+        <div class="carousel-controls">
+          <button class="carousel-btn" id="carouselPrev">&#8592;</button>
+          <button class="carousel-btn" id="carouselNext">&#8594;</button>
+          <div class="carousel-dots" id="carouselDots"></div>
+          <span class="carousel-counter" id="carouselCounter"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHOWS -->
+    <section class="panel" id="shows">
+      <p class="section-label anim">Live</p>
+      <h2 class="section-title anim">Concertkalender</h2>
+      <div class="shows-list">
+        <a href="https://www.setlist.fm/setlist/doordeweeks/2025/de-avenue-breda-netherlands-b4dd5a2.html" target="_blank" class="show-row show-past anim">
+          <div class="show-date">December 2025</div>
+          <div class="show-venue">Gala optreden — De Avenue</div>
+          <div class="show-city">Breda, NL</div>
+          <span class="show-ticket">Setlist →</span>
+        </a>
+        <a href="https://www.setlist.fm/setlist/doordeweeks/2024/avans-hogeschool-breda-netherlands-535a7b61.html" target="_blank" class="show-row show-past anim">
+          <div class="show-date">Juni 2025</div>
+          <div class="show-venue">Debuutoptreden — Avans Hogeschool</div>
+          <div class="show-city">Breda, NL</div>
+          <span class="show-ticket">Setlist →</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- LISTEN -->
+    <section class="panel" id="listen">
+      <p class="section-label anim">Beluister</p>
+      <h2 class="section-title anim">Overal te vinden</h2>
+      <div class="platforms">
+        <a href="https://open.spotify.com/artist/5Qm3TZLyl5794591xJqpdE" target="_blank" class="platform-card anim">
+          <span class="platform-icon">♫</span>
+          <div class="platform-name">Spotify</div>
+          <div class="platform-sub">Volg ons</div>
+        </a>
+        <a href="https://soundcloud.com/robbe-broekhoven" target="_blank" class="platform-card anim">
+          <span class="platform-icon">◉</span>
+          <div class="platform-name">SoundCloud</div>
+          <div class="platform-sub">Beluister gratis</div>
+        </a>
+        <a href="https://www.youtube.com/@DOORDEWEEKS" target="_blank" class="platform-card anim">
+          <span class="platform-icon">▶</span>
+          <div class="platform-name">YouTube</div>
+          <div class="platform-sub">Video's &amp; meer</div>
+        </a>
+        <a href="https://www.instagram.com/wijzijndoordeweeks/" target="_blank" class="platform-card anim">
+          <span class="platform-icon">◈</span>
+          <div class="platform-name">Instagram</div>
+          <div class="platform-sub">Volg voor updates</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="panel" id="contact">
+      <p class="section-label anim">Contact</p>
+      <h2 class="section-title anim">Neem contact op</h2>
+      <div class="contact-single anim">
+        <a href="mailto:doordeweekszakelijk@gmail.com">doordeweekszakelijk@gmail.com</a>
+        <p>Voor vragen, boekingen, samenwerkingen en persmateriaal.</p>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="panel">
+      <div class="footer-logo anim">DOORDEWEEKS</div>
+      <div class="footer-copy anim">© 2026 DOORDEWEEKS — Breda, Nederland<br>Alle rechten voorbehouden.</div>
+      <div class="footer-social anim">
+        <a href="https://open.spotify.com/artist/5Qm3TZLyl5794591xJqpdE" target="_blank">Spotify</a>
+        <a href="https://soundcloud.com/robbe-broekhoven" target="_blank">SoundCloud</a>
+        <a href="https://www.instagram.com/wijzijndoordeweeks/" target="_blank">Instagram</a>
+        <a href="https://www.youtube.com/@DOORDEWEEKS" target="_blank">YouTube</a>
+      </div>
+    </footer>
+
+  </div><!-- #page -->
+
+  <script>
+    // ─── Cursor ───
+    const cursor = document.getElementById('cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('big'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('big'));
+    });
+
+    // ─── Fullpage ───
+    const page    = document.getElementById('page');
+    const panels  = Array.from(document.querySelectorAll('.panel'));
+    const nav     = document.getElementById('nav');
+    const sdots   = document.getElementById('sidedots');
+    let current   = 0;
+    let animating = false;
+    const DURATION = 900; // ms, matches CSS transition
+
+    // Build side dots
+    panels.forEach((_, i) => {
+      const d = document.createElement('button');
+      d.className = 'sdot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', 'Ga naar sectie ' + (i + 1));
+      d.addEventListener('click', () => goToSection(i));
+      sdots.appendChild(d);
+    });
+
+    function goToSection(index) {
+      if (index === current || animating) return;
+      if (index < 0 || index >= panels.length) return;
+      animating = true;
+
+      // Remove active from old panel (resets animations)
+      panels[current].classList.remove('active');
+
+      current = index;
+      page.style.transform = `translateY(-${current * 100}vh)`;
+
+      // Nav style: dark on all sections except hero
+      nav.classList.toggle('dark', current !== 0);
+
+      // Update side dots
+      sdots.querySelectorAll('.sdot').forEach((d, i) => d.classList.toggle('active', i === current));
+
+      // Trigger enter animations after transition
+      setTimeout(() => {
+        panels[current].classList.add('active');
+        animating = false;
+      }, DURATION * 0.5);
+    }
+
+    // Activate first panel immediately
+    setTimeout(() => panels[0].classList.add('active'), 100);
+
+    // ─── Wheel ───
+    let wheelCooldown = false;
+    window.addEventListener('wheel', e => {
+      // Don't hijack if inside the carousel
+      if (e.target.closest('#carouselOuter') || e.target.closest('.carousel-controls')) return;
+      if (wheelCooldown || animating) return;
+      wheelCooldown = true;
+      setTimeout(() => { wheelCooldown = false; }, DURATION + 200);
+      goToSection(current + (e.deltaY > 0 ? 1 : -1));
+    }, { passive: true });
+
+    // ─── Keyboard ───
+    window.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); goToSection(current + 1); }
+      if (e.key === 'ArrowUp'   || e.key === 'PageUp')   { e.preventDefault(); goToSection(current - 1); }
+    });
+
+    // ─── Touch swipe ───
+    let touchStartY = 0;
+    window.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+    window.addEventListener('touchend', e => {
+      if (e.target.closest('#carouselOuter')) return;
+      const diff = touchStartY - e.changedTouches[0].clientY;
+      if (Math.abs(diff) > 60) goToSection(current + (diff > 0 ? 1 : -1));
+    });
+
+    // ─── Hamburger ───
+    const hamburger = document.getElementById('hamburger');
+    const navLinks  = document.getElementById('navLinks');
+    hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+    function closeMobileMenu() { navLinks.classList.remove('open'); }
+
+    // ─── Carousel ───
+    const track    = document.getElementById('carouselTrack');
+    const slides   = track.querySelectorAll('.carousel-slide');
+    const prevBtn  = document.getElementById('carouselPrev');
+    const nextBtn  = document.getElementById('carouselNext');
+    const dotsCont = document.getElementById('carouselDots');
+    const counter  = document.getElementById('carouselCounter');
+
+    const perView  = window.innerWidth < 700 ? 1 : window.innerWidth < 1100 ? 2 : 3;
+    const total    = slides.length;
+    const maxIdx   = total - perView;
+    let cCurrent   = 0;
+
+    for (let i = 0; i <= maxIdx; i++) {
+      const d = document.createElement('button');
+      d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+      d.addEventListener('click', () => cGoTo(i));
+      dotsCont.appendChild(d);
+    }
+
+    function getSlideW() { return slides[0].offsetWidth + 16; }
+
+    function cGoTo(i) {
+      cCurrent = Math.max(0, Math.min(i, maxIdx));
+      track.style.transform = `translateX(-${cCurrent * getSlideW()}px)`;
+      dotsCont.querySelectorAll('.carousel-dot').forEach((d, j) => d.classList.toggle('active', j === cCurrent));
+      counter.textContent = `${cCurrent + 1} / ${maxIdx + 1}`;
+      prevBtn.disabled = cCurrent === 0;
+      nextBtn.disabled = cCurrent === maxIdx;
+    }
+
+    prevBtn.addEventListener('click', () => cGoTo(cCurrent - 1));
+    nextBtn.addEventListener('click', () => cGoTo(cCurrent + 1));
+
+    // Swipe inside carousel
+    let cTouchX = 0;
+    track.addEventListener('touchstart', e => { cTouchX = e.touches[0].clientX; }, { passive: true });
+    track.addEventListener('touchend', e => {
+      const diff = cTouchX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) { e.stopPropagation(); cGoTo(cCurrent + (diff > 0 ? 1 : -1)); }
+    });
+
+    cGoTo(0);
+  </script>
+</body>
+</html>
